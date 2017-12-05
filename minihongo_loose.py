@@ -48,37 +48,25 @@ def build_marked_2gram_sets(spkm):
         if len(dc) == 2:    # 例：㌔
             if dc[0] == 'ほ':
                 dc = ['ホ','カ']
-            yoko_t = fill_gram_set(yoko_t, '{}$'.format(dc[0]), km)
-            yoko_b = fill_gram_set(yoko_b, '${}'.format(dc[1]), km)
+            yoko_t = fill_gram_set(yoko_t, '{}'.format(dc[0]), km)
+            yoko_b = fill_gram_set(yoko_b, '{}'.format(dc[1]), km)
             if 'ー' not in dc[0]:
-                tate_l = fill_gram_set(tate_l, '{}$'.format(dc[0]), km)
+                tate_l = fill_gram_set(tate_l, '{}'.format(dc[0]), km)
             if 'ー' not in dc[1]:
-                tate_r = fill_gram_set(tate_r, '${}'.format(dc[1]), km)
+                tate_r = fill_gram_set(tate_r, '{}'.format(dc[1]), km)
         elif len(dc) == 3:  # 例：㌵
-            yoko_t = fill_gram_set(yoko_t, '${}{}'.format(dc[0], dc[1]), km)
-            yoko_t = fill_gram_set(yoko_t, '{}{}$'.format(dc[0], dc[1]), km)
             yoko_t = fill_gram_set(yoko_t, '{}{}'.format(dc[0], dc[1]), km)
-            yoko_b = fill_gram_set(yoko_b, '{}$'.format(dc[2]), km)
+            yoko_b = fill_gram_set(yoko_b, '{}'.format(dc[2]), km)
             if 'ー' not in dc[0]+dc[2]:
-                tate_l = fill_gram_set(tate_l, '${}{}'.format(dc[0], dc[2]), km)
-                tate_l = fill_gram_set(tate_l, '{}{}$'.format(dc[0], dc[2]), km)
                 tate_l = fill_gram_set(tate_l, '{}{}'.format(dc[0], dc[2]), km)
             if 'ー' not in dc[1]:
-                tate_r = fill_gram_set(tate_r, '{}$'.format(dc[1]), km)
+                tate_r = fill_gram_set(tate_r, '{}'.format(dc[1]), km)
         elif len(dc) == 4:  # 例：㌀
-            yoko_t = fill_gram_set(yoko_t, '${}{}'.format(dc[0], dc[1]), km)
-            yoko_t = fill_gram_set(yoko_t, '{}{}$'.format(dc[0], dc[1]), km)
             yoko_t = fill_gram_set(yoko_t, '{}{}'.format(dc[0], dc[1]), km)
-            yoko_b = fill_gram_set(yoko_b, '${}{}'.format(dc[2], dc[3]), km)
-            yoko_b = fill_gram_set(yoko_b, '{}{}$'.format(dc[2], dc[3]), km)
             yoko_b = fill_gram_set(yoko_b, '{}{}'.format(dc[2], dc[3]), km)
             if 'ー' not in dc[0]+dc[2]:
-                tate_l = fill_gram_set(tate_l, '${}{}'.format(dc[0], dc[2]), km)
-                tate_l = fill_gram_set(tate_l, '{}{}$'.format(dc[0], dc[2]), km)
                 tate_l = fill_gram_set(tate_l, '{}{}'.format(dc[0], dc[2]), km)
             if 'ー' not in dc[1]+dc[3]:
-                tate_r = fill_gram_set(tate_r, '${}{}'.format(dc[1], dc[3]), km)
-                tate_r = fill_gram_set(tate_r, '{}{}$'.format(dc[1], dc[3]), km)
                 tate_r = fill_gram_set(tate_r, '{}{}'.format(dc[1], dc[3]), km)
         else:
             print('{} is not usable. Ignoring'.format(km))
@@ -90,18 +78,18 @@ def composable(word, grams, used, rest):
     if rest == '':
         components = [grams['map'][g] for g in used]
         #components = [g for g in used]
-        print('{} composable as: {}'.format(word[1:-1], ''.join(components)))
+        print('{} composable as: {}'.format(word, ''.join(components)))
     if rest == False:
         rest = word
-    if rest[0:4] in grams['list']:
-        used.append(rest[0:4])
-        composable(word, grams, used, rest[4:])
-    elif rest[0:3] in grams['list']:
+    if rest[0:3] in grams['list']:
         used.append(rest[0:3])
         composable(word, grams, used, rest[3:])
     elif rest[0:2] in grams['list']:
         used.append(rest[0:2])
         composable(word, grams, used, rest[2:])
+    elif rest[0:1] in grams['list']:
+        used.append(rest[0:1])
+        composable(word, grams, used, rest[1:])
 
 spkm = get_square_pattern_kumimoji()
 sets = build_marked_2gram_sets(spkm)
@@ -111,9 +99,6 @@ with open('kk_word_list_50k') as f:
 
 # words = [w.strip() for w in words if len(w.strip()) >= 3]
 words = [w.strip() for w in words if len(w.strip())]
-words = ['${}$'.format(w) for w in words]
-
-
 
 for aset in sets:
     print('- - - - - - - - - - - - - - - - - - -')
