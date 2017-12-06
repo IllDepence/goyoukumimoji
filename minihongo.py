@@ -86,38 +86,43 @@ def build_marked_2gram_sets(spkm):
 
     return [yoko_t, yoko_b, tate_l, tate_r]
 
-def composable(word, grams, used, rest):
+def composable(word_kat, word_norm, grams, used, rest):
     if rest == '':
         components = [grams['map'][g] for g in used]
         #components = [g for g in used]
-        print('{} composable as: {}'.format(word[1:-1], ''.join(components)))
+        print('{} composable as: {}'.format(word_norm, ''.join(components)))
     if rest == False:
-        rest = word
+        rest = word_kat
     if rest[0:4] in grams['list']:
         used.append(rest[0:4])
-        composable(word, grams, used, rest[4:])
+        composable(word_kat, word_norm, grams, used, rest[4:])
     elif rest[0:3] in grams['list']:
         used.append(rest[0:3])
-        composable(word, grams, used, rest[3:])
+        composable(word_kat, word_norm, grams, used, rest[3:])
     elif rest[0:2] in grams['list']:
         used.append(rest[0:2])
-        composable(word, grams, used, rest[2:])
+        composable(word_kat, word_norm, grams, used, rest[2:])
 
 spkm = get_square_pattern_kumimoji()
 sets = build_marked_2gram_sets(spkm)
 
-with open('kk_word_list_50k') as f:
+with open('wikipedia-frequency-list-japanese-41k-both.tsv') as f:
     words = f.readlines()
 
 # words = [w.strip() for w in words if len(w.strip()) >= 3]
 words = [w.strip() for w in words if len(w.strip())]
-words = ['${}$'.format(w) for w in words]
-
-
 
 for aset in sets:
     print('- - - - - - - - - - - - - - - - - - -')
     print('- - - - - - -{}- - - - - - -'.format(aset['label']))
     print('- - - - - - - - - - - - - - - - - - -')
     for w in words:
-        composable(w, aset, [], False)
+        parts = w.split('\t')
+        if len(parts) == 2:
+            kat = parts[0]
+            norm = parts[1]
+        else:
+            kat = parts[0]
+            norm = parts[0]
+        kat = '${}$'.format(kat)
+        composable(kat, norm, aset, [], False)

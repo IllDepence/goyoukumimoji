@@ -1,3 +1,4 @@
+import sys
 from unicodedata import decomposition
 
 def get_kumimoji():
@@ -94,8 +95,13 @@ def composable(word_kat, word_norm, grams, used, rest):
 spkm = get_square_pattern_kumimoji()
 sets = build_marked_2gram_sets(spkm)
 
-with open('wikipedia-frequency-list-japanese-41k-both.tsv') as f:
-    words = f.readlines()
+if len(sys.argv) < 2:
+    with open('wikipedia-frequency-list-japanese-41k-both.tsv') as f:
+        words = f.readlines()
+elif len(sys.argv) == 2:
+    words = sys.argv[1].split(',')
+else:
+    sys.exit(1)
 
 # words = [w.strip() for w in words if len(w.strip()) >= 3]
 words = [w.strip() for w in words if len(w.strip())]
