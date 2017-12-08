@@ -11,7 +11,7 @@ c = [chr(x) for x in range(13056, 13143+1)] + [chr(127488)]
 [chr(int(x, 16)) for x in decomposition(chr(13143)).split(' ')[1:]]
 
 # word list katakata conversion
-$ head word_list -n 50000 | kakasi -i utf8 -JK -HK > kk_word_list_50k
+$ cat foo | kakasi -i utf8 -JK -HK > bar
 
 # 横下
 の  は  が  と  か  しか    と
