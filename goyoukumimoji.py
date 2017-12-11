@@ -27,23 +27,23 @@ def fill_gram_set(aset, gram, km):
     return aset
 
 def build_ngram_sets(spkm, mark_ends, only_full):
-    """ 引数：　組文字の配列
-        返り値：１行目・２行目・１列目・２列目それぞれの配列
+    """ 引数：　組文字の配列、マーカー設定、組文字部分集合設定
+        返り値：横１行目・２行目・縦１行目・２行目それぞれの配列
 
-        例：　　>>> build_ngram_sets(['㌐','㌳'])
+        例：　　>>> build_ngram_sets(['㌐','㌳'], True, False)
                 [['ギ$','$フィ','フィ$','フィ'],
                  ['$ガ','$ート','ート$','ート'],
                  ['ギ$'],
                  ['$ガ','$ィト','ィト$','ィト']]
 
         注１：　㌳とかの「ー」は縦書きで使えない
-        注２：　$は文字列の始まり・終わりを表す
+        注２：　$は文字列の始まり・終わりを表すマーカー
     """
 
     yoko_t = {'label':'横書き１行目','list':[], 'map':{}}
     yoko_b = {'label':'横書き２行目','list':[], 'map':{}}
-    tate_l = {'label':'縦書き２列目','list':[], 'map':{}}
-    tate_r = {'label':'縦書き１列目','list':[], 'map':{}}
+    tate_r = {'label':'縦書き１行目','list':[], 'map':{}}
+    tate_l = {'label':'縦書き２行目','list':[], 'map':{}}
     for km in spkm:
         dc = decomp(km)
         if len(dc) == 2 and not only_full:    # 例：㌔
@@ -112,12 +112,18 @@ def build_ngram_sets(spkm, mark_ends, only_full):
                 else:
                     tate_r = fill_gram_set(tate_r, '{}{}'.format(dc[1], dc[3]), km)
 
-    return [yoko_t, yoko_b, tate_l, tate_r]
+    return [yoko_t, yoko_b, tate_r, tate_l]
 
 def composable(word_kat, word_norm, grams, used, rest):
     if rest == '':
         components = [grams['map'][g] for g in used]
-        print('{} composable as: {}'.format(word_norm, ''.join(components)))
+        if '縦' in grams['label']:
+            msg = '{} ⬎'.format(word_norm)
+            for c in components:
+                msg += '\n{} {}'.format('　'*len(word_norm), c)
+        else:
+            msg = '{} → {}'.format(word_norm, ''.join(components))
+        print(msg)
     if rest == False:
         rest = word_kat
     if rest[0:4] in grams['list']:
